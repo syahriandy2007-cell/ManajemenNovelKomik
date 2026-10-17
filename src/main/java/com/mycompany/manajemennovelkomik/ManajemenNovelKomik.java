@@ -4,7 +4,6 @@ import java.util.Scanner;
 
 public class ManajemenNovelKomik {
 
-    // Method Overloading 1: Pencarian berdasarkan Judul (String)
     public static void cariKoleksi(String judul, Koleksi[] daftarKoleksi, int jumlahKoleksi) {
         System.out.println("\n--- Hasil Pencarian Berdasarkan Judul: \"" + judul + "\" ---");
         boolean ditemukan = false;
@@ -12,6 +11,7 @@ public class ManajemenNovelKomik {
             if (daftarKoleksi[i].getJudul().equalsIgnoreCase(judul)) {
                 System.out.print("- Ditemukan: ");
                 daftarKoleksi[i].tampilkanInfo();
+                simulasiLayananPerpus(daftarKoleksi[i]);
                 ditemukan = true;
             }
         }
@@ -20,7 +20,6 @@ public class ManajemenNovelKomik {
         }
     }
 
-    // Method Overloading 2: Pencarian berdasarkan Tahun Terbit (int)
     public static void cariKoleksi(int tahunTerbit, Koleksi[] daftarKoleksi, int jumlahKoleksi) {
         System.out.println("\n--- Hasil Pencarian Berdasarkan Tahun: " + tahunTerbit + " ---");
         boolean ditemukan = false;
@@ -28,6 +27,7 @@ public class ManajemenNovelKomik {
             if (daftarKoleksi[i].getTahunTerbit() == tahunTerbit) {
                 System.out.print("- Ditemukan: ");
                 daftarKoleksi[i].tampilkanInfo();
+                simulasiLayananPerpus(daftarKoleksi[i]);
                 ditemukan = true;
             }
         }
@@ -36,14 +36,26 @@ public class ManajemenNovelKomik {
         }
     }
 
+    public static void simulasiLayananPerpus(Koleksi item) {
+        item.caraPinjam();
+
+        if (item instanceof DapatDipinjam) {
+            DapatDipinjam itemPinjam = (DapatDipinjam) item;
+            itemPinjam.prosesPinjamFisik();
+        }
+
+        if (item instanceof DapatDinilai) {
+            DapatDinilai itemRating = (DapatDinilai) item;
+            itemRating.beriRating(5);
+        }
+    }
+
     public static void main(String[] args) {
         try (Scanner scanner = new Scanner(System.in)) {
-            // Wadah Array dengan kapasitas maksimal 10 data
             Koleksi[] daftarKoleksi = new Koleksi[10];
             int jumlahKoleksi = 0;
             boolean isRunning = true;
 
-            // Inisialisasi minimal 3-5 data objek awal lengkap dengan atribut spesifiknya
             daftarKoleksi[jumlahKoleksi++] = new Novel("Laskar Pelangi", "Andrea Hirata", 2005, "Drama/Inspiratif");
             daftarKoleksi[jumlahKoleksi++] = new Komik("Naruto Vol. 1", "Masashi Kishimoto", 1999, 1);
             daftarKoleksi[jumlahKoleksi++] = new Novel("Bumi", "Tere Liye", 2014, "Sci-Fi/Fantasi");
@@ -56,13 +68,13 @@ public class ManajemenNovelKomik {
             while (isRunning) {
                 System.out.println("\nMenu Utama:");
                 System.out.println("1. Tambah Koleksi Baru (Novel / Komik)");
-                System.out.println("2. Tampilkan Seluruh Koleksi");
+                System.out.println("2. Tampilkan Seluruh Koleksi & Polimorfisme");
                 System.out.println("3. Cari Koleksi (Fitur Method Overloading)");
                 System.out.println("4. Keluar");
                 System.out.print("Pilih Menu (1-4): ");
 
                 int pilihan = scanner.nextInt();
-                scanner.nextLine(); // Membersihkan buffer enter
+                scanner.nextLine();
 
                 switch (pilihan) {
                     case 1 -> {
@@ -85,17 +97,13 @@ public class ManajemenNovelKomik {
                             if (jenis == 1) {
                                 System.out.print("Masukkan Genre Novel : ");
                                 String genreBaru = scanner.nextLine();
-                                // Instansiasi objek Novel (Subclass)
-                                daftarKoleksi[jumlahKoleksi] = new Novel(judulBaru, penulisBaru, tahunBaru, genreBaru);
-                                jumlahKoleksi++;
+                                daftarKoleksi[jumlahKoleksi++] = new Novel(judulBaru, penulisBaru, tahunBaru, genreBaru);
                                 System.out.println("Sukses! Novel baru berhasil ditambahkan.");
                             } else if (jenis == 2) {
                                 System.out.print("Masukkan Nomor Volume: ");
                                 int volBaru = scanner.nextInt();
                                 scanner.nextLine();
-                                // Instansiasi objek Komik (Subclass)
-                                daftarKoleksi[jumlahKoleksi] = new Komik(judulBaru, penulisBaru, tahunBaru, volBaru);
-                                jumlahKoleksi++;
+                                daftarKoleksi[jumlahKoleksi++] = new Komik(judulBaru, penulisBaru, tahunBaru, volBaru);
                                 System.out.println("Sukses! Komik baru berhasil ditambahkan.");
                             } else {
                                 System.out.println("Pilihan jenis koleksi tidak valid!");
@@ -111,12 +119,10 @@ public class ManajemenNovelKomik {
                         } else {
                             for (int i = 0; i < jumlahKoleksi; i++) {
                                 System.out.print((i + 1) + ". ");
-                                // Memanggil method hasil overriding secara polimorfis
                                 daftarKoleksi[i].tampilkanInfo();
-                                daftarKoleksi[i].caraPinjam();
+                                simulasiLayananPerpus(daftarKoleksi[i]);
                                 System.out.println("--------------------------------------------------");
                             }
-                            // Memanggil variabel static
                             System.out.println("* Total Objek Koleksi Terdaftar: " + Koleksi.totalKoleksiBerhasilDibuat);
                         }
                         System.out.print("Tekan Enter untuk melanjutkan...");
@@ -133,12 +139,12 @@ public class ManajemenNovelKomik {
                         if (modeCari == 1) {
                             System.out.print("Masukkan Judul yang dicari: ");
                             String kataKunci = scanner.nextLine();
-                            cariKoleksi(kataKunci, daftarKoleksi, jumlahKoleksi); // Memanggil overloading versi String
+                            cariKoleksi(kataKunci, daftarKoleksi, jumlahKoleksi);
                         } else if (modeCari == 2) {
                             System.out.print("Masukkan Tahun yang dicari: ");
                             int angkaKunci = scanner.nextInt();
                             scanner.nextLine();
-                            cariKoleksi(angkaKunci, daftarKoleksi, jumlahKoleksi); // Memanggil overloading versi int
+                            cariKoleksi(angkaKunci, daftarKoleksi, jumlahKoleksi);
                         } else {
                             System.out.println("Pilihan mode pencarian tidak valid.");
                         }

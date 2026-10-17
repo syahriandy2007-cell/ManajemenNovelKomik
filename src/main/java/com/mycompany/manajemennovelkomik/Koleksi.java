@@ -1,21 +1,19 @@
 package com.mycompany.manajemennovelkomik;
 
-public class Koleksi {
+public abstract class Koleksi {
     private String judul;
     private String penulis;
     private int tahunTerbit;
 
-    // Variabel static untuk mencatat total objek yang berhasil dibuat
     public static int totalKoleksiBerhasilDibuat = 0;
 
-    // Constructor menggunakan keyword this
     public Koleksi(String judul, String penulis, int tahunTerbit) {
         this.judul = judul;
         this.penulis = penulis;
-        setTahunTerbit(tahunTerbit); // Menggunakan setter untuk validasi
+        setTahunTerbit(tahunTerbit);
+        totalKoleksiBerhasilDibuat++;
     }
 
-    // Getter dan Setter dengan Encapsulation & Validasi
     public String getJudul() {
         return this.judul;
     }
@@ -45,13 +43,9 @@ public class Koleksi {
         }
     }
 
-    // Method dasar untuk info
     public void tampilkanInfo() {
         System.out.printf("Judul: %-20s | Penulis: %-15s | Tahun: %d%n", this.judul, this.penulis, this.tahunTerbit);
     }
 
-    // Method dasar aksi pinjam (untuk di-override)
-    public void caraPinjam() {
-        System.out.println("Koleksi dipinjam secara fisik di meja administrasi.");
-    }
+    public abstract void caraPinjam();
 }
